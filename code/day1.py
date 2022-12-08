@@ -23,13 +23,8 @@ with open(inputfile, "r") as fh:
             if minlist < current_sum:
                 indexminlist = maxlist.index(minlist)
                 maxlist[indexminlist] = current_sum
-                
+
             current_sum = 0
-                
-
-
-
-        
 
         line = fh.readline()
 
