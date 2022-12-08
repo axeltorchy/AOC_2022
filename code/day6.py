@@ -1,4 +1,5 @@
 import utils
+import string
 from itertools import cycle
 
 inputfile = utils.INPUT_DIR / "day6.txt"
@@ -6,23 +7,25 @@ inputfile = utils.INPUT_DIR / "day6.txt"
 with open(inputfile, "r") as fh:
     line = fh.readline()
 
-count = 1
-known_chars = []
-for char in line:
-    print(char)
-    if char not in known_chars and len(known_chars) == 3:
-        print("WIN! Count:", count, "Known:", known_chars, "Char:", char)
-        known_chars.append(char)
-        break
-    elif char in known_chars:
-        print("Char", char, "already in list! Known:", known_chars)
-        char_idx = known_chars.index(char)
-        known_chars.append(char)
-        known_chars = known_chars[char_idx+1:]
-        print("Index", char_idx, "New known:", known_chars)
-    else:
-        known_chars.append(char)
-    
-    count += 1
+N = 14
+current_pos = 1
+last_position = {}
+current_seq = 0
 
-print("Marker position:", count)
+for char in line:
+    if char in last_position and last_position[char] < current_pos - N + 1:
+        last_position[char] = current_pos
+        current_seq += 1
+    elif char in last_position and last_position[char] >= current_pos - N + 1:
+        current_seq = min(current_seq +1, current_pos - last_position[char])
+        last_position[char] = current_pos
+    else: # char not in last_position
+        last_position[char] = current_pos
+        current_seq += 1
+    
+    if current_seq == N:
+        break
+
+    current_pos += 1
+
+print("Marker position:", current_pos)
