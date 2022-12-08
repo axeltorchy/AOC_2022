@@ -1,12 +1,11 @@
 import utils
-import string
 
 inputfile = utils.INPUT_DIR / "day4.txt"
 
 with open(inputfile, "r") as fh:
     lines = fh.readlines()
 
-# Part 1
+# Parts 1 & 2
 count_fully_contained = 0
 count_overlap = 0
 for line in lines:
