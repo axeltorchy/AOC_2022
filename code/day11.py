@@ -1,4 +1,5 @@
 import utils
+import math
 
 inputfile = utils.INPUT_DIR / "day11.txt"
 #inputfile = utils.INPUT_DIR / "day11_example_part1.txt"
@@ -7,6 +8,7 @@ class Monkey():
 
     monkeys_list = {}
     N_monkeys = 0
+    modulus = 1
 
     def __init__(self, id, items, operation, divisibleby, true_id, false_id):
         self.id = id
@@ -15,6 +17,7 @@ class Monkey():
             self.add_item(int(item))
         self.operation = lambda old : eval(operation) # lambda function
         self.divisibleby = divisibleby
+        Monkey.modulus *= divisibleby
         self.true_id = true_id
         self.false_id = false_id
         self.items_inspected = 0
@@ -41,16 +44,17 @@ class Monkey():
             #print(f"{self} inspecting item {item}")
             item = self.operation(item)
             # relief
-            #print(f"Before bored, worry level is {item}")
-            item = int(item * 1.0 / 3)
+            # Part 1
+            #item = int(item / 3)
+            # Part 2
+            item = item % Monkey.modulus
             # inspection
-            #print(f"After bored, worry level is {item}")
             self.items_inspected += 1
             if item % self.divisibleby == 0:
-                #print(f"Sending item {item} to monkey {self.true_id}")
+                #print(f"{self} Sending item {item} to monkey {self.true_id}")
                 Monkey.monkeys_list[self.true_id].add_item(item)
             else:
-                #print(f"Sending item {item} to monkey {self.false_id}")
+                #print(f"{self} sending item {item} to monkey {self.false_id}")
                 Monkey.monkeys_list[self.false_id].add_item(item)
         # remove all items
         self.items = []
@@ -82,18 +86,21 @@ with open(inputfile, "r") as fh:
         id += 1
 
 # Part 1
-max_round = 20
+max_round = 10000
 
 for i in range(max_round):
-    print(f"---- Round {i+1} ----")
+    #print(f"---- Round {i+1} ----")
     for j in range(len(Monkey.monkeys_list)):
         monkey = Monkey.monkeys_list[j]
         monkey.process_items()
+
+print(f"Ended {max_round} rounds.")
 
 max_inspected = [0, 0]
 idx_max_inspected = [-1, -1]
 for i in range(Monkey.N_monkeys):
     items_inspected = Monkey.monkeys_list[i].items_inspected
+    print(f"Monkey {i} inspected items {items_inspected} times.")
     if max_inspected[0] < items_inspected:
         max_inspected[0] = items_inspected
         idx_max_inspected[0] = i
