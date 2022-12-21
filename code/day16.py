@@ -1,6 +1,7 @@
 import utils
 import re
 import numpy as np
+from time import time
 
 example = False
 inputfile = utils.INPUT_DIR / "day16.txt"
@@ -55,7 +56,11 @@ print(f"Found {len(valves_neighbors)} valves: {valves_neighbors.keys()}")
 
 # Memoization hashtable for each state
 max_pressures = {}
+count_max_pressure_calls = 0
+
 def max_pressure(current_valve, opened_valves, time_left):
+    global count_max_pressure_calls
+    count_max_pressure_calls += 1
     """
     Recursively computes the maximum pressure releasable starting from the
     provided state.
@@ -100,4 +105,8 @@ if __name__ == "__main__":
     print("#"*80)
     start_valve_id = valve_id[start_valve]
     print(f"Part 1: computing best pressure, starting from valve {start_valve}.")
+    t = time()
     print(f"Maximum pressure: {max_pressure(start_valve_id, opened_valves, 30)}")
+    print(f"Computed solution in {time() - t :.2f} seconds.")
+    print(f"Called max_pressure function {count_max_pressure_calls} times.")
+    print(f"Computed full result for only {len(max_pressures)} different states.")
