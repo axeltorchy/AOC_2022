@@ -58,7 +58,7 @@ print(f"Found {len(valves_neighbors)} valves: {valves_neighbors.keys()}")
 max_pressures = {}
 count_max_pressure_calls = 0
 
-def max_pressure(current_valve, opened_valves, time_left):
+def max_pressure(current_valve, opened_valves, time_left, using_elephant=False, elephant=False):
     global count_max_pressure_calls
     count_max_pressure_calls += 1
     """
@@ -68,10 +68,17 @@ def max_pressure(current_valve, opened_valves, time_left):
     """
     # Computing current state, must be hashable
     if time_left == 0:
+        #print("No time left. using_elephant:", using_elephant, "elephant:", elephant)
+        # The principal human ran out of time, now the elephant can begin
+        # starting at valve 0, with the same opened valves
+        if using_elephant and not elephant:
+            #print("Using elephant")
+            return max_pressure(valve_id["AA"], opened_valves, 26, using_elephant=True, elephant=True)
+        
         # no time left, no pressure to release
         return 0
 
-    state = (current_valve, opened_valves, time_left)
+    state = (current_valve, opened_valves, time_left, using_elephant, elephant)
     # If state already visited: return stored value for max pressure
     if state in max_pressures:
         #print(f"State {state} already visited.")
@@ -84,11 +91,11 @@ def max_pressure(current_valve, opened_valves, time_left):
     if not current_is_open and flow_rates[current_valve] > 0:
         # open valve
         new_opened_valves = opened_valves | (1 << current_valve)
-        local_max = max(local_max, (time_left - 1) * flow_rates[current_valve] + max_pressure(current_valve, new_opened_valves, time_left - 1))
+        local_max = max(local_max, (time_left - 1) * flow_rates[current_valve] + max_pressure(current_valve, new_opened_valves, time_left - 1, using_elephant, elephant))
     
     # For all tunnels, choose the maximum achievable pressure release
     for neighbor in valves_neighbors_id[current_valve]:
-        local_max = max(local_max, max_pressure(neighbor, opened_valves, time_left - 1))
+        local_max = max(local_max, max_pressure(neighbor, opened_valves, time_left - 1, using_elephant, elephant))
 
     # Update memoization table
     max_pressures[state] = local_max
@@ -106,7 +113,14 @@ if __name__ == "__main__":
     start_valve_id = valve_id[start_valve]
     print(f"Part 1: computing best pressure, starting from valve {start_valve}.")
     t = time()
-    print(f"Maximum pressure: {max_pressure(start_valve_id, opened_valves, 30)}")
+    print(f"Maximum pressure: {max_pressure(start_valve_id, opened_valves, 30, using_elephant=False, elephant=False)}")
+    print(f"Computed solution in {time() - t :.2f} seconds.")
+    print(f"Called max_pressure function {count_max_pressure_calls} times.")
+    print(f"Computed full result for only {len(max_pressures)} different states.")
+    print("#"*80)
+    print(f"Part 2: computing best pressure with elephant, starting from valve {start_valve}")
+    t = time()
+    print(f"Maximum pressure: {max_pressure(start_valve_id, opened_valves, 26, using_elephant=True, elephant=False)}")
     print(f"Computed solution in {time() - t :.2f} seconds.")
     print(f"Called max_pressure function {count_max_pressure_calls} times.")
     print(f"Computed full result for only {len(max_pressures)} different states.")
