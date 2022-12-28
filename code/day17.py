@@ -101,9 +101,7 @@ while True:
     
     count_rocks += 1
 
-    if count_rocks % 10000000 == 0:
-        print(f"0.{count_rocks // 10000000} %")
-    if count_rocks == 1000000000000:
+    if count_rocks == 2022:
         break
 
 print(f"{count_rocks} have fallen, current size: {len(tower)}")
