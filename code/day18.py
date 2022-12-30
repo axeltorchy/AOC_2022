@@ -2,7 +2,6 @@ import utils
 import numpy as np
 from time import time
 from scipy.spatial import Delaunay
-from shapely.geometry import Point, Polygon
 
 example = False
 inputfile = utils.INPUT_DIR / "day18.txt"
