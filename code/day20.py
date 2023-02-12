@@ -1,15 +1,18 @@
 import utils
-import re
 import numpy as np
-from time import time
 
-example = False
+# set part_2 to False to see results for part 1
+part_2 = True
+example = True
 inputfile = utils.INPUT_DIR / "day20.txt"
 if example:
     inputfile = utils.INPUT_DIR / "day20_example.txt"
 
 original_numbers = []
+# decryption key is 1 for part 1
 decryption_key = 1
+if part_2:
+    decryption_key = 811589153
 
 with open(inputfile, 'r') as fh:
     lines = fh.readlines()
@@ -19,68 +22,37 @@ for line in lines:
 
 N_nb = len(original_numbers)
 
-
-# # references are the index in the original_numbers list
-# neighbors = {}
-
-# for i in range(N_nb):
-#     neighbors[i] = {
-#         "previous": (i - 1) % N_nb,
-#         "next": (i + 1) % N_nb
-#     }
-
-# # print(neighbors)
-# for i in range(N_nb):
-#     print(f"{i} moves between ")
-
 current_positions = [i for i in range(N_nb)]
 current_list = [i for i in range(N_nb)] # contains the indices of numbers in original list
 
-for i in range(N_nb):
-    #print("i is", i)
-    #print(f"Current positions are", current_positions)
-    #print(f"Current list is: {current_list}")
-    # makes shift between 0 and len(init_numbers) - 1
-    shift = original_numbers[i]
-    #print("Shift is", shift)
-    new_position = (current_positions[i] + shift) % (N_nb - 1)
+multiplier = 1
+if part_2:
+    multiplier = 10
+for ii in range(multiplier * N_nb):
+    
+    i = ii % N_nb
 
-    #print(f"Moving number {original_numbers[i]} (currently at position {current_positions[i]}) to position {new_position}")
+    shift = original_numbers[i]
+    new_position = (current_positions[i] + shift) % (N_nb - 1)
 
     # moving left, shifting the others right in the list
     if new_position > current_positions[i]:
         #print("Moving right")
         for n in range(current_positions[i] + 1, new_position + 1):
-            #print(f"   n = {n}")
             index_to_move = current_list[n]
             current_positions[index_to_move] = (current_positions[index_to_move] - 1) % N_nb
             current_list[n-1] = current_list[n]
-            #print(f"   Current positions are {current_positions}")
-            #print(f"   Current list is: {current_list}")
-    # moving right, shifting the others left in the list
     elif new_position < current_positions[i]:
-        #print("Moving left")
         for n in range(current_positions[i]-1, new_position-1, -1):
             index_to_move = current_list[n]
             current_positions[index_to_move] = (current_positions[index_to_move] + 1) % N_nb
             current_list[n+1] = current_list[n]
-            #print(f"   Current positions are {current_positions}")
-            #print(f"   Current list is: {current_list}")
 
     else:
         print("Nothing changes!")
 
     current_positions[i] = new_position
     current_list[new_position] = i
-
-    #print(f"Current positions are {current_positions}")
-    #print(f"Current list is {current_list}")
-    #print("------")
-
-
-#print(current_positions)
-
-#print(current_list)
 
 print("="*80)
 
